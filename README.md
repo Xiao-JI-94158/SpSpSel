@@ -14,6 +14,9 @@ This tutorial will develop itself with the following logic:
     * Demonstrating the phase refocusing in both spectral and spatial domain from slice rephasing. 
 
     * Demonstrating the spontaneous dual selectivity in both spectral and spatial domain
-    
+
   2. Two active species with Bloch-McConnel Eqn
-  3. 
+
+    - Repeating what we have done in Step 1
+
+  3. Wrap the stepwise demo into module, then apply naive BlackBox optimization for fitting kinetic parameters.  
