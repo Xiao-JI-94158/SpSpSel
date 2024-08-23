@@ -10,4 +10,5 @@ This tutorial will develop itself with the following logic:
     * Demonstrating basic spatial selectivity.
     * Demonstrating the phase refocusing in both spectral and spatial domain from slice rephasing. 
     * Demonstrating the spontaneous dual selectivity in both spectral and spatial domain
-  2. Two active species with Bloch-McConnel Eqn, 
+  2. Two active species with Bloch-McConnel Eqn
+  3. 
