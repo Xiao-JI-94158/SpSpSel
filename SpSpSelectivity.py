@@ -23,3 +23,61 @@ def solveAnalyticalBlochTraj(A:np.array, M_0:np.array, nbr_steps:int, dTau:float
         mTrajList.append(M_0)
 
     return np.asarray(mTrajList, dtype=np.float64)
+
+def solveBlochRfWaveformPropagatorList(rfwaveformX:np.array, rfwaveformY:np.array, Tau:float, offsetZ:float=0, R_1:float=0, R_2:float=0):
+    nSteps = len(rfwaveformX)
+
+    if not (nSteps==len(rfwaveformY)):
+        raise ValueError(f"rfwaveformX ({len(rfwaveformX)}) and rfwaveformY ({len(rfwaveformY)}) are not of equal length")
+    
+    dTau = Tau / nSteps
+
+    propagatorList = []
+
+    for idx, rfVals in enumerate(zip(rfwaveformX,rfwaveformY)):
+        BlochMat = np.array([[-R_2, offsetZ, -rfVals[1], 0],[-offsetZ, -R_2,rfVals[0],0],[rfVals[1], -rfVals[0], R_1, R_1],[0,0,0,0]])
+        propagator = scipy.linalg.expm(BlochMat*dTau)
+        propagatorList.append(propagator)
+
+
+    return propagatorList
+
+def solveBlochRfWaveformTraj(initialState:np.array, rfwaveformX:np.array, rfwaveformY:np.array, Tau:float, offsetZ:float=0, R_1:float=0, R_2:float=0):
+
+    nSteps = len(rfwaveformX)
+
+    if not (nSteps==len(rfwaveformY)):
+        raise ValueError(f"rfwaveformX ({len(rfwaveformX)}) and rfwaveformY ({len(rfwaveformY)}) are not of equal length")
+    
+    dTau = Tau / nSteps
+
+    mTrajList = []
+    mTrajList.append(initialState)
+    M_0 = initialState
+    
+    for idx, rfVals in enumerate(zip(rfwaveformX,rfwaveformY)):
+        BlochMat = np.array([[-R_2, offsetZ, -rfVals[1], 0],[-offsetZ, -R_2,rfVals[0],0],[rfVals[1], -rfVals[0], R_1, R_1],[0,0,0,0]])
+        propagator = scipy.linalg.expm(BlochMat*dTau)
+        M_0 = np.dot(propagator, M_0)
+        mTrajList.append(M_0)
+
+    return np.asarray(mTrajList, dtype=np.float64)
+
+def solveBlochRfWaveformOverallPropagator(rfwaveformX:np.array, rfwaveformY:np.array, Tau:float, offsetZ:float=0, R_1:float=0, R_2:float=0):
+    nSteps = len(rfwaveformX)
+
+    if not (nSteps==len(rfwaveformY)):
+        raise ValueError(f"rfwaveformX ({len(rfwaveformX)}) and rfwaveformY ({len(rfwaveformY)}) are not of equal length")
+    
+    dTau = Tau / nSteps
+
+    propagatorList = []
+
+    for idx, rfVals in enumerate(zip(rfwaveformX,rfwaveformY)):
+        BlochMat = np.array([[-R_2, offsetZ, -rfVals[1], 0],[-offsetZ, -R_2,rfVals[0],0],[rfVals[1], -rfVals[0], R_1, R_1],[0,0,0,0]])
+        if idx==0:
+            propagator = scipy.linalg.expm(BlochMat*dTau)
+        else:
+            propagator = np.dot(scipy.linalg.expm(BlochMat*dTau), propagator)
+
+    return propagator
